@@ -1,31 +1,52 @@
+import prisma from "../config/prisma.js";
 import { createError } from "../utils/createError.js";
 
-export const listUser = (req, res, next) => {
+export const listUser = async (req, res, next) => {
   try {
-    // 1. Check Email
-    if (true) {
-      createError(400, 'Email already exists!!')
-    } else {
-      throw new Error("Password is Invalid!!")
-    }
-    res.json({ message: "This is List All User" });
+    const user = await prisma.user.findMany({
+      omit: {
+        password: true
+      }
+    })
+    console.log(user)
+    res.json({ message: "This is List All User", result: user });
   } catch (error) {
     next(error);
   }
 };
 
-export const readUser = (req, res) => {
-  res.json({ message: "This is Read User" });
+export const updateRoleUser = async (req, res) => {
+  try {
+    // 1. Read params & body
+    const { id } = req.params
+    const { role } = req.body
+    console.log(id, role)
+    res.json({ message: "This is Update Role User" });
+  } catch (error) {
+    next(error)
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    res.json({ message: "This is Delete User" });
+  } catch (error) {
+    next(error)
+  }
+};
+
+export const readUser = async (req, res) => {
+  try {
+    res.json({ message: "This is Read User" });
+  } catch (error) {
+    next(error)
+  }
 };
 
 export const createUser = (req, res) => {
-  res.json({ message: "This is Create User" });
-};
-
-export const updateRoleUser = (req, res) => {
-  res.json({ message: "This is Update Role User" });
-};
-
-export const deleteUser = (req, res) => {
-  res.json({ message: "This is Delete User" });
+  try {
+    res.json({ message: "This is Create User" });
+  } catch (error) {
+    next(error)
+  }
 };

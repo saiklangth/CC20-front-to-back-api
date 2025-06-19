@@ -162,8 +162,61 @@ import jwt from "jsonwebtoken";
 
 ### TODO Overview Login
 1. Validate body
-2. Check body
+- โค้ด register เอามาแค่ email, password
+2. Check body --> destructuring
+```bash
+const { email, password } = req.body;
+```
 3. Check Email in DB
+```bash
+ const user = await prisma.user.findFirst({
+      where: {
+        email: email
+      }
+    })
+    console.log(user)
+    if (!user) {
+      createError(400, "Email or Password is invalid!!!")
+    }
+```
 4. Check Password is collect
+```bash
+const checkPassword = bcrypt.compareSync(password, user.password)
+    if(!checkPassword) {
+      createError(400, "Email or Password is invalid!!!")
+    }
+```
 5. Create token
+```bash
+   const payload = {
+      id: user.id,
+      role: user.role,
+    }
+    const token = jwt.sign(payload, process.env.SECRET, {expiresIn: "1d"});
+```
 6. Response
+
+### TODO Overview Middleware
+1. Checck header
+```bash
+const header = req.headers.authorization;
+console.log(header)
+```
+2. Split Token Bearer
+```bash
+const token = header.split(' ')[1]
+console.log(token)
+```
+3. Verify JWT (import from jsonwebtoken) --> รับ token, secret, arrow(error, decode)
+```bash
+jwt.verify(token, process.env.SECRET, (error, decode) => {
+  console.log(error)
+  console.log(decode)
+  if(error) {
+    createError(401, "Token is Invalid!!")
+  }
+  req.user = decode
+  next();
+})
+```
+4. Create req.user
